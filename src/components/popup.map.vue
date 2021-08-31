@@ -1,8 +1,7 @@
 <template>
   <div>
     <div id="map"></div>
-    <div id="popup_list">
-    </div>
+    <div id="popup_list"></div>
   </div>
 </template>
 
@@ -15,11 +14,11 @@ export default {
       Popup: "",
     };
   },
-  props:{
-      locations: {
-          type: Array,
-          required: true
-      }
+  props: {
+    locations: {
+      type: Array,
+      required: true,
+    },
   },
   methods: {
     definePopupClass() {
@@ -32,7 +31,7 @@ export default {
        */
       this.Popup = function (position, content) {
         this.position = position;
-        console.log(position , content)
+        console.log(position, content);
         content.classList.add("popup-bubble-content");
 
         var pixelOffset = document.createElement("div");
@@ -68,10 +67,7 @@ export default {
           this.position
         );
         // Hide the popup when it is far out of view.
-        var display =
-          Math.abs(divPosition.x) < 4000 && Math.abs(divPosition.y) < 4000
-            ? "block"
-            : "none";
+        var display =  Math.abs(divPosition.x) < 4000 && Math.abs(divPosition.y) < 4000 ? "block" : "none";
 
         if (display === "block") {
           this.anchor.style.left = divPosition.x + "px";
@@ -85,21 +81,7 @@ export default {
       /** Stops clicks/drags from bubbling up to the map. */
       this.Popup.prototype.stopEventPropagation = function () {
         var anchor = this.anchor;
-        anchor.style.cursor = "auto";
-
-        [
-          "click",
-          "dblclick",
-          "contextmenu",
-          "wheel",
-          "mousedown",
-          "touchstart",
-          "pointerdown",
-        ].forEach(function (event) {
-          anchor.addEventListener(event, function (e) {
-            e.stopPropagation();
-          });
-        });
+        anchor.style.cursor = "auto"        
       };
       this.addPopupToMap();
     },
@@ -109,23 +91,25 @@ export default {
     addPopupToMap() {
       this.$nextTick(() => {
         this.map = new google.maps.Map(document.getElementById("map"), {
-          center: { lat: Number(this.locations[0].latitude.toFixed(1)), lng:  Number(this.locations[0].longtitude.toFixed(1)) },
+          center: {
+            lat: Number(this.locations[0].latitude.toFixed(1)),
+            lng: Number(this.locations[0].longtitude.toFixed(1)),
+          },
           zoom: 10,
         });
-        this.locations.forEach((location , lIndex) =>{
+        this.locations.forEach((location, lIndex) => {
           var label = document.createElement("div");
-          label.setAttribute('id', `content_${lIndex}`)
-          label.setAttribute('class' , 'popup-bubble-content')
-          label.innerHTML = location.title
+          label.setAttribute("id", `content_${lIndex}`);
+          label.setAttribute("class", "popup-bubble-content");
+          label.innerHTML = location.title;
           var popup_list = document.getElementById("popup_list");
-            this.insertAfter(popup_list, label);
-            var popup = new this.Popup(
+          this.insertAfter(popup_list, label);
+          var popup = new this.Popup(
             new google.maps.LatLng(location.latitude, location.longtitude),
             document.getElementById(`content_${lIndex}`)
-            );
-            popup.setMap(this.map);
-        })
-       
+          );
+          popup.setMap(this.map);
+        });
       });
     },
   },
